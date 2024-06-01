@@ -297,6 +297,17 @@ end
 
 M.conceal_cmd = function(lang, node, _)
 
+  -- First we need to check the node's parents to see if we encounter a subscript or superscript
+  local parent = node:parent()
+  local type = parent:type()
+  while type ~= "source_file" do
+    if type == "superscript" or type == "subscript" then
+      return(nil)
+    end
+    parent = parent:parent()
+    type = parent:type()
+  end
+
   local field = "command"
   if lang == "rnoweb" then
     field = "Sexpr"
@@ -407,14 +418,14 @@ M.subsuper = function(_, node, meta)
   local type = parent:type()
   local check = false
   while type ~= "source_file" do
-    type = parent:type()
     if type == "label_definition" then
       return(nil)
-    elseif type == "math_environment" then
+    elseif type == "math_environment" or type == "generic_environment" or type == "inline_formula"  or type == "displayed_equation" then
       check = true
       break
     end
     parent = parent:parent()
+    type = parent:type()
   end
 
   -- Are we in some kind of math_environment?
@@ -428,25 +439,58 @@ M.subsuper = function(_, node, meta)
   local kind = meta["kind"]
 
   local beg_line, beg_col, end_line, end_col  = node:range()
-  -- I want to conceal the _ or ^ as well
-  beg_col = beg_col - 1
 
   -- We need to substitute the text with the unicode sub/super characters
-  local text = ts.get_node_text(node, 0)
-  local tlen = #text
+  local text = ts.get_node_text(node, 1)
 
   local out = ""
 
-  -- If the string is one character long, its not a curly group
-  if tlen == 1 then
-    out = ss[kind][text] == nil and text or ss[kind][text]
+  -- Check if the string is a curly group. If so, extract what's inside.
+  -- text from E_{i \in \mathbb{C}} becomes i \in \mathbb{C}
+  if string.sub(text, 2, 2) == "{" and #text > 2 then
+    text = string.sub(text, 3, #text-1)
   else
-    for i = 2, (tlen - 1) do
-      local c = string.sub(text, i, i)
-      c = ss[kind][c] == nil and c or ss[kind][c]
-      out = out .. c
+    text = string.sub(text, 2, #text)
+  end
+
+
+  -- now node has two children one with '_' and the other with the subsup text entries.
+  -- We need the subsup child. Unlike lua TS index starts at 0.
+  node = node:child(1)
+
+  -- function to break the subsup entry to concealable atoms and do conceals
+  local function subsup_depth_conceal(current_node)
+
+    -- Think about \beta here. It is one of the good examples. \beta has a concealing to β
+    -- But β again has a subscript concealement to ᵦ
+    local curr_node_text = ts.get_node_text(current_node, 0)
+    local conceal_text = sym.get_sym_text("latex", curr_node_text, current_node) ~= nil and sym.get_sym_text("latex", curr_node_text, current_node)[1] or nil
+    local subsup_conceal_text = ss[kind][conceal_text] ~= nil and ss[kind][conceal_text] or ss[kind][curr_node_text] -- last entry for the case when β doesn't have a subscript conceal, but \beta subscript conceal to ᵦ ᵅ
+
+    -- Best case
+    if subsup_conceal_text ~= nil then
+      text, _ = string.gsub(text, curr_node_text, subsup_conceal_text)
+    -- If that doesn't exist
+    elseif conceal_text ~= nil then
+      text, _ = string.gsub(text, curr_node_text, conceal_text)
+    elseif current_node:child_count() > 0 then
+      for i = 0, current_node:child_count() - 1 do
+        subsup_depth_conceal(current_node:child(i))
+      end
+    else
+      conceal_text = ""
+      for i = 1, #curr_node_text do
+        local c = string.sub(curr_node_text, i, i)
+        c = ss[kind][c] == nil and c or ss[kind][c]
+        conceal_text = conceal_text .. c
+      end
+      text, _ = string.gsub(text, curr_node_text, conceal_text)
     end
   end
+
+  subsup_depth_conceal(node)
+
+  local out = text
 
   -- Opening symbol
   local opts = {
@@ -468,6 +512,16 @@ M.subsuper = function(_, node, meta)
     clen
   )
 
+end
+
+M.subscript = function(_, node, meta)
+  meta["kind"] = "subscript"
+  M.subsuper(_, node, meta)
+end
+
+M.superscript = function(_, node, meta)
+  meta["kind"] = "superscript"
+  M.subsuper(_, node, meta)
 end
 
 M.footnote = function(_, node, _)

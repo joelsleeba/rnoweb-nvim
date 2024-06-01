@@ -107,52 +107,19 @@ table.insert(M.queries.latex, {
 })
 
 
-
--- Sub/superscripts are a bit of a pain to capture
-
 table.insert(M.queries.latex, {
-  fn    = "subsuper",
+  fn    = "subscript",
   query = [[
-    (superscript
-      (curly_group
-        (text)
-      ) @tval (#set! @tval "kind" "superscript")
-    )
-  ]],
-})
-
----[===[
-table.insert(M.queries.latex, {
-  fn    = "subsuper",
-  query = [[
-    (subscript
-      (curly_group
-        (text)
-      ) @tval (#set! @tval "kind" "subscript")
-    )
+    (subscript) @subscript
   ]],
 })
 
 table.insert(M.queries.latex, {
-  fn    = "subsuper",
+  fn    = "superscript",
   query = [[
-    (superscript
-      (word) @tval (#set! @tval "kind" "superscript")
-    )
+    (superscript) @superscript
   ]],
 })
-
-
-table.insert(M.queries.latex, {
-  fn    = "subsuper",
-  query = [[
-      (subscript
-        (word) @tval (#set! @tval "kind" "subscript")
-      )
-  ]],
-})
-
---]===]
 
 
 -- Lots of latex replacements
