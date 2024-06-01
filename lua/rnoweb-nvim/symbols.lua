@@ -420,16 +420,25 @@ M.sym.latex['\\arccos'] = {{"arccos"}}
 M.sym.latex['\\arctan'] = {{"arctan"}}
 M.sym.latex['\\arcsin'] = {{"arcsin"}}
 
+M.sym.latex['\\lim']    = {{"lim"}}
+M.sym.latex['\\sup']    = {{"sup"}}
+M.sym.latex['\\inf']    = {{"inf"}}
+
 M.sym.latex['\\lbrace'] = {{"{"}}
 M.sym.latex['\\rbrace'] = {{"}"}}
 M.sym.latex['\\{']      = {{"{"}}
 M.sym.latex['\\}']      = {{"}"}}
 
+M.sym.latex['\\langle'] = {{"⟨"}}
+M.sym.latex['\\rangle'] = {{"⟩"}}
+
+M.sym.latex['\\emptyset']      = {{"∅"}}
 
 -- Non-greeks
 M.sym.latex["\\therefore"] = {{"∴"}}
 M.sym.latex["\\ldots"]   = {{"…"}}
 M.sym.latex["\\\\"]      = {{"↲ "}}
+M.sym.latex["\\|"]       = {{"‖"}}
 M.sym.latex["\\nabla"]   = {{"∇"}}
 M.sym.latex["\\because"] = {{"∵"}}
 M.sym.latex["\\vdots"]   = {{"⋮"}}
@@ -565,6 +574,16 @@ M.sym.latex['\\left']         = {{""}}
 M.sym.latex['\\right']        = {{""}}
 M.sym.latex['\\textbf']       = {{"", ""}}
 M.sym.latex['\\mathrm']       = {{"", ""}}
+M.sym.latex["\\textrm"]       = {{"",  ""}}
+M.sym.latex["\\bm"]           = {{"",  ""}}
+M.sym.latex["\\emph"]         = {{"",  ""}}
+M.sym.latex["\\symbf"]        = {{"",  ""}}
+M.sym.latex["\\pmb"]          = {{"",  ""}}
+
+M.sym.latex["\\big"]       = {{""}}
+M.sym.latex["\\bigg"]      = {{""}}
+M.sym.latex["\\Big"]       = {{""}}
+M.sym.latex["\\Bigg"]      = {{""}}
 
 -- Commands with arguments
 M.sym.latex["\\enquote"]  = {{"“", "”"}}
