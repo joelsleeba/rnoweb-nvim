@@ -2,6 +2,7 @@ local ts = vim.treesitter
 local q  = vim.treesitter.query
 local info  = require'rnoweb-nvim.info'
 local super = require'rnoweb-nvim.super_list'
+local letter = require'rnoweb-nvim.letter_list'
 
 local M = {
   sym = {
@@ -598,6 +599,11 @@ M.sym.latex['\\v'] = {txt = {"",  ""}, fn = super.get_diacritic}
 M.sym.latex['\\t'] = {txt = {"",  ""}, fn = super.get_diacritic}
 M.sym.latex['\\o'] = {txt = {"",  ""}, fn = super.get_diacritic}
 M.sym.latex['\\i'] = {txt = {"",  ""}, fn = super.get_diacritic}
+
+M.sym.latex["\\mathbb"] = { txt = { "", "" }, fn = letter.get_letterface }
+M.sym.latex["\\mathcal"] = { txt = { "", "" }, fn = letter.get_letterface }
+M.sym.latex["\\mathfrak"] = { txt = { "", "" }, fn = letter.get_letterface }
+M.sym.latex["\\mathscr"] = { txt = { "", "" }, fn = letter.get_letterface }
 
 -- Latex mappings can also include the underscored
 --for k, _ in pairs(M.sym.latex) do
